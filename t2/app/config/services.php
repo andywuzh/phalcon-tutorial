@@ -1,7 +1,7 @@
 <?php
 
+use Phalcon\Mvc\View;
 use Phalcon\Mvc\Url as UrlProvider;
-use Phalcon\Session\Adapter\Files as Session;
 
 $di->set('url', function() use ($config) {
     $url = new UrlProvider();
@@ -11,10 +11,8 @@ $di->set('url', function() use ($config) {
     return $url;
 });
 
-$di->set('session', function() {
-    $session = new Session();
-
-    $session->start();
-
-    return $session;
+$di->set('view', function () use ($config) {
+    $view = new View();
+    $view->setViewsDir(APP_PATH . $config->application->viewsDir);
+    return $view;
 });

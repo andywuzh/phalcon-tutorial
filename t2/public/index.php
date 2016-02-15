@@ -1,47 +1,23 @@
 <?php
 
-use Phalcon\Loader;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\Application;
 use Phalcon\Di\FactoryDefault;
-use Phalcon\Mvc\Url as UrlProvider;
-use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
+use Phalcon\Config\Adapter\Ini as ConfigIni;
+
+define('APP_PATH', realpath('..') . '/');
 
 try {
-
-    // Register an autoloader
-    $loader = new Loader();
-    $loader->registerDirs(array(
-        '../app/controllers/',
-        '../app/models/'
-    ))->register();
-
-    // Create a DI
+    // create a DI
     $di = new FactoryDefault();
 
-    // Setup the database service
-    $di->set('db', function() {
-        return new DbAdapter([
-            'host' => '127.0.0.1',
-            'username' => 'rw',
-            'password' => 'rw',
-            'dbname' => 'test',
-        ]);
-    });
+    // read the configuration
+    $config = new ConfigIni(APP_PATH . 'app/config/config.ini');
 
-    // Setup the view component
-    $di->set('view', function () {
-        $view = new View();
-        $view->setViewsDir('../app/views/');
-        return $view;
-    });
+    // registering a set of directories taken from the configuration file
+    require APP_PATH . 'app/config/loader.php';
 
-    // Setup a base URI so that all generated URIs include the "tutorial" folder
-    $di->set('url', function () {
-        $url = new UrlProvider();
-        $url->setBaseUri('/phalcon-test/public/');
-        return $url;
-    });
+    // load application services
+    require APP_PATH . 'app/config/services.php';
 
     // Handle the request
     $application = new Application($di);
